@@ -36,7 +36,7 @@ void convolution_run(int buffer_idx)
 /*
  * Copy data in L1
  */
-void kernel_init(int  h_tile_idx, int  w_tile_idx, int  c_tile_idx, int buffer_idx)
+void tile_load(int  h_tile_idx, int  w_tile_idx, int  c_tile_idx, int buffer_idx)
 {
 #if defined(DEBUG)
   printf("---> Entering Kernel Initialization...\n");
@@ -92,7 +92,7 @@ void kernel_run(int buffer_idx)
 /*
  * Move back the output results in L2
  */
-void kernel_end(int h_tile_idx, int w_tile_idx, int c_tile_idx, int buffer_idx)
+void tile_store(int h_tile_idx, int w_tile_idx, int c_tile_idx, int buffer_idx)
 {
 #if defined(DEBUG)
   printf("---> Entering Kernel Ending...\n");
@@ -118,7 +118,7 @@ void kernel_end(int h_tile_idx, int w_tile_idx, int c_tile_idx, int buffer_idx)
 #endif
 }
 
-void kernel_wait()
+void tile_load_store_wait()
 {
   dory_dma_wait();
 #if defined(DEBUG)

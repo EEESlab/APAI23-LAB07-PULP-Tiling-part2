@@ -3,10 +3,11 @@
 #include "input.h"
 #include "weights.h"
 #include "output.h"
+#include "kernel.h"
 
 int layer_init()
 {
-#if defined(DEBUG)
+#ifdef DEBUG
   printf("-> Entering Layer Initialization...\n");
 #endif
 
@@ -28,7 +29,7 @@ int layer_init()
     return -L2_ERROR;
   }
 
-#if defined(DEBUG)
+#ifdef DEBUG
   printf("-> Exiting Layer Initialization...\n");
 #endif
 
@@ -40,7 +41,7 @@ int layer_init()
  */
 void layer_run()
 {
-#if defined(DEBUG)
+#ifdef DEBUG
   printf("--> Entering Layer Running...\n");
 #endif
 
@@ -76,7 +77,7 @@ void layer_run()
   /*
    * Cluster performance counters
    */
-#if defined(PERFORMANCE)
+#ifdef PERFORMANCE
   pi_perf_conf(1 << PI_PERF_ACTIVE_CYCLES | 1 << PI_PERF_CYCLES | 1 << PI_PERF_INSTR);
   pi_perf_reset();
   pi_perf_start();
@@ -114,23 +115,30 @@ void layer_run()
 
 
   /** EXERCISE4.1: implement double buffering
-   *  the sequence to obtain double buffering would be:
-   *    - initialize buffer#0
-   *    - wait until initialization buffer#0 is done
-   *    - initialize buffer#1
-   *    - run inference on buffer#0
+   *
+   *  Double buffering pseudo code:
+   *
+   *    load tiles[0] -> current_buffer
+   *    for i in range(len(tiles)):
+   *        wait for previous loads and stores
+   *        load tiles[i+1] -> next_buffer
+   *        kernel_run current_buffer
+   *        store current_buffer -> tiles[i]
+   *    wait for previous loads and stores before exiting
    * 
-   * Use these functions:
-   *  - void kernel_init(int h_tile_idx, int w_tile_idx, int c_tile_idx, int buffer_idx) -->  starts DMA transfer (L2->L1) for a specific tile (you can select which one with the indexes)
-   *  - void kernel_run(int buffer_idx)                                                  -->  Runs inference for the selected buffer_idx
-   *  - void kernel_end(int h_tile_idx, int w_tile_idx, int c_tile_idx, int buffer_idx)  -->  DMA copies the the output from L1 to L2 memory
-   *  - void kernel_wait()                                                               -->  waits until next DMA interrupt (the interrupt tells you the dma trasnfer has been completed)
+   * To implement this, use functions from kernel_execute.h.
+   * 
+   * Summary of the functions:
+   *  - void tile_load(int h_tile_idx, int w_tile_idx, int c_tile_idx, int buffer_idx)  -->  starts DMA transfer (L2->L1) for a specific tile (you can select which one with the indexes)
+   *  - void kernel_run(int buffer_idx)                                                 -->  Runs inference for the selected buffer_idx
+   *  - void tile_store(int h_tile_idx, int w_tile_idx, int c_tile_idx, int buffer_idx) -->  DMA copies the output from L1 to L2 memory
+   *  - void tile_load_store_wait()                                                     -->  waits until load and store are complete
    */
   const int nb_tiles_total = nb_h_tile * nb_w_tile;
   int buffer_idx = 0;
 
   /*
-  * Kernel initialization for tile 0 (outside the for loop)
+  * Load tile 0's input data (outside the for loop)
   */
   /* YOUR CODE HERE */;
 
@@ -142,38 +150,40 @@ void layer_run()
       const int next_tile_idx = next_h_tile_idx * nb_w_tile + next_w_tile_idx;
 
       /*
-       * Kernel wait, until previus DMA transfer has been completed
+       * Wait for the current tiles data
+       * Note: we are waiting here and not right before the kernel, because
+       * otherwise we would wait for the next tile too and ruin the point
+       * of double buffering.
        */
       /* YOUR CODE HERE */;
 
       /*
-      * Kernel initialization for the next tile
+      * Load next tiles input data from L2 into L1
       */
       if (next_tile_idx < nb_total_tiles) { // Check if there exists a 'next' tile
         /* YOUR CODE HERE */;
       }
 
       /*
-       * Executing the main kernel
+       * Kernel execution
        */
-       
       /* YOUR CODE HERE */;
-
 
       /*
-       * Kernel ending
+       * Store output data back into L2 from L1
        */
       /* YOUR CODE HERE */;
-
 
       buffer_idx = next_buffer_idx;
     }
   }
+
   /*
-  * Kernel wait, until previus DMA transfer has been completed
+  * Last wait for the DMA transfers
   */  
   /* YOUR CODE HERE */;
-#if defined(PERFORMANCE)
+
+#ifdef PERFORMANCE
   pi_perf_stop();
   uint32_t instr_cnt      = pi_perf_read(PI_PERF_INSTR);
   uint32_t cycles_cnt     = pi_perf_read(PI_PERF_CYCLES);
@@ -181,7 +191,7 @@ void layer_run()
   printf("[0]: instructions = %d, tot_cycles = %d, active_cycles = %d \n", instr_cnt, cycles_cnt, act_cycles_cnt);
 #endif
 
-#if defined(DEBUG)
+#ifdef DEBUG
   printf("--> Exiting Layer Running...\n");
 #endif
 }
