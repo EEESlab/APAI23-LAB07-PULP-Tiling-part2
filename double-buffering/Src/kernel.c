@@ -50,8 +50,12 @@ void tile_load(int  h_tile_idx, int  w_tile_idx, int  c_tile_idx, int buffer_idx
    *
    *  Calculate the tile overlapping and adjust the `network_offset` variable to account for that.
    */
-  const int network_offset =  h_tile_idx * l1_layer.layer_dim.y_in * network_layers[0].layer_dim.x_in * network_layers[0].layer_dim.c_in
-      +  w_tile_idx * l1_layer.layer_dim.x_in * network_layers[0].layer_dim.c_in
+
+  const int tile_overlap_x_in = 0;  // CHANGE ME - Hardcoded for 1x1
+  const int tile_overlap_y_in = 0;  // CHANGE ME - Hardcoded for 1x1
+
+  const int network_offset =  h_tile_idx * (l1_layer.layer_dim.y_in - tile_overlap_y_in) * network_layers[0].layer_dim.x_in * network_layers[0].layer_dim.c_in
+      +  w_tile_idx * (l1_layer.layer_dim.x_in - tile_overlap_x_in) * network_layers[0].layer_dim.c_in
       +  c_tile_idx * l1_layer.layer_dim.c_in;
   const int ext_stride_1d = network_layers[0].layer_dim.c_in * network_layers[0].layer_dim.x_in;
   const int buffer_size = l1_layer.layer_dim.c_in * l1_layer.layer_dim.x_in * l1_layer.layer_dim.y_in;
