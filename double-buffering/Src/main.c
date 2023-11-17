@@ -72,8 +72,8 @@ void cluster_init()
 
   l1_layer.layer_dim.x_out = network_layers[0].layer_dim.x_out / TILING_PARAMETER;
   l1_layer.layer_dim.y_out = network_layers[0].layer_dim.y_out / TILING_PARAMETER;
-  l1_layer.layer_dim.x_in  = l1_layer.layer_dim.x_out + WEIGHTS_KERNEL_WIDTH - 1;
-  l1_layer.layer_dim.y_in  = l1_layer.layer_dim.y_out + WEIGHTS_KERNEL_HEIGHT - 1;
+  l1_layer.layer_dim.x_in  = l1_layer.layer_dim.x_out + l1_layer.layer_dim.x_ker - 1;
+  l1_layer.layer_dim.y_in  = l1_layer.layer_dim.y_out + l1_layer.layer_dim.y_ker - 1;
 
 
 #ifdef USE_L1_MEM
@@ -161,7 +161,7 @@ int main()
   pi_perf_stop();
   uint32_t instr_cnt  = pi_perf_read(PI_PERF_INSTR);
   uint32_t cycles_cnt = pi_perf_read(PI_PERF_CYCLES);
-#if defined(PERFORMANCE)
+#ifdef PERFORMANCE
   printf("[FC]: instructions = %d, tot_cycles = %d\n", instr_cnt, cycles_cnt);
 #endif
   err = layer_check();
