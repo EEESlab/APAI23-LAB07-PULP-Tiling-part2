@@ -38,7 +38,7 @@ void convolution_run(int buffer_idx)
  */
 void tile_load(int  h_tile_idx, int  w_tile_idx, int  c_tile_idx, int buffer_idx)
 {
-#if defined(DEBUG)
+#ifdef DEBUG
   printf("---> Entering Kernel Initialization...\n");
 #endif
 
@@ -73,7 +73,7 @@ void tile_load(int  h_tile_idx, int  w_tile_idx, int  c_tile_idx, int buffer_idx
   l1_layer.input_data = network_layers[0].input_data;
 #endif
 
-#if defined(DEBUG)
+#ifdef DEBUG
   printf("---> Exiting Kernel Initialization...\n");
 #endif
 }
@@ -94,7 +94,7 @@ void kernel_run(int buffer_idx)
  */
 void tile_store(int h_tile_idx, int w_tile_idx, int c_tile_idx, int buffer_idx)
 {
-#if defined(DEBUG)
+#ifdef DEBUG
   printf("---> Entering Kernel Ending...\n");
 #endif
 
@@ -113,7 +113,7 @@ void tile_store(int h_tile_idx, int w_tile_idx, int c_tile_idx, int buffer_idx)
   dory_dma_memcpy_2d_async(&copy);
 #endif
 
-#if defined(DEBUG)
+#ifdef DEBUG
   printf("---> Exiting Kernel Ending...\n");
 #endif
 }
@@ -121,7 +121,7 @@ void tile_store(int h_tile_idx, int w_tile_idx, int c_tile_idx, int buffer_idx)
 void tile_load_store_wait()
 {
   dory_dma_wait();
-#if defined(DEBUG)
+#ifdef DEBUG
   printf("---> Waiting Kernel Transfer...\n");
 #endif
 }
