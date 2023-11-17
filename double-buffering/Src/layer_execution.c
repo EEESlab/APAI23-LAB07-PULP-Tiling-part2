@@ -84,30 +84,8 @@ void layer_run()
 #endif
 
 #ifdef ENABLE_TILING
-  /** EXERCISE5: compute the number of tiles on the output size
-   */
-  /**
-   * these are the variables that store the layers' sizes
-   * Network's layers:
-   *    network_layers[0].layer_dim.x_in  --> input w dimension
-   *    network_layers[0].layer_dim.y_in  --> input h dimension
-   *    network_layers[0].layer_dim.x_out --> output w dimension
-   *    network_layers[0].layer_dim.y_out --> output h dimension
-   * L1 layer:
-   *    l1_layer.layer_dim.x_in  --> input w dimension
-   *    l1_layer.layer_dim.y_in  --> input h dimension
-   *    l1_layer.layer_dim.x_out --> output w dimension
-   *    l1_layer.layer_dim.y_out --> output h dimension
-   */
-
-  /** Task 5.3. 3x3 convolution number of tiles
-   *
-   *  Check the calculation of number of tiles for the 3x3 convolution.
-   *  HINT: Look at the way the layer size is calculated in main.c lines 73-76
-   */
-
-  nb_h_tile = network_layers[0].layer_dim.y_in / l1_layer.layer_dim.y_in;
-  nb_w_tile = network_layers[0].layer_dim.x_in / l1_layer.layer_dim.x_in;
+  nb_h_tile = network_layers[0].layer_dim.y_out / l1_layer.layer_dim.y_out;
+  nb_w_tile = network_layers[0].layer_dim.x_out / l1_layer.layer_dim.x_out;
 #else
   nb_h_tile = 1;
   nb_w_tile = 1;
