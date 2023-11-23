@@ -112,7 +112,7 @@ void layer_run()
    *  - void tile_store(int h_tile_idx, int w_tile_idx, int c_tile_idx, int buffer_idx) -->  DMA copies the output from L1 to L2 memory
    *  - void tile_load_store_wait()                                                     -->  waits until load and store are complete
    */
-  const int nb_tiles_total = nb_h_tile * nb_w_tile;
+  const int nb_tiles = nb_h_tile * nb_w_tile;
   int buffer_idx = 0;
 
   /*
@@ -120,8 +120,8 @@ void layer_run()
   */
   /* YOUR CODE HERE */;
 
-  for (h_tile_idx = 0; h_tile_idx < nb_h_tile; h_tile_idx++) {
-    for (w_tile_idx = 0; w_tile_idx < nb_w_tile; w_tile_idx++) {
+  for (int h_tile_idx = 0; h_tile_idx < nb_h_tile; h_tile_idx++) {
+    for (int w_tile_idx = 0; w_tile_idx < nb_w_tile; w_tile_idx++) {
       const int next_buffer_idx = (buffer_idx + 1) % 2;
       const int next_w_tile_idx = (w_tile_idx + 1) % nb_w_tile;
       const int next_h_tile_idx = h_tile_idx + (next_w_tile_idx == 0 ? 1 : 0);  // If the next_w_tile is 0, that means we went into a new row, so the next_h_tile is h_tile + 1
@@ -138,7 +138,7 @@ void layer_run()
       /*
       * Load next tiles input data from L2 into L1
       */
-      if (next_tile_idx < nb_total_tiles) { // Check if there exists a 'next' tile
+      if (next_tile_idx < nb_tiles) { // Check if there exists a 'next' tile
         /* YOUR CODE HERE */;
       }
 
