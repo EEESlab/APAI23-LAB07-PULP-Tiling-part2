@@ -21,7 +21,7 @@ void convolution_run(int buffer_idx)
     l1_layer.layer_dim.y_in,
     l1_layer.layer_dim.c_in,
     l1_layer.layer_dim.x_out,
-    l1_layer.layer_dim.y_out,    
+    l1_layer.layer_dim.y_out,
     l1_layer.layer_dim.c_out,
     l1_layer.layer_dim.x_ker,
     l1_layer.layer_dim.y_ker,
@@ -51,8 +51,8 @@ void tile_load(int  h_tile_idx, int  w_tile_idx, int  c_tile_idx, int buffer_idx
    *  Calculate the tile overlapping and adjust the `network_offset` variable to account for that.
    */
 
-  const int tile_overlap_x_in = 0;  // CHANGE ME - Hardcoded for 1x1
-  const int tile_overlap_y_in = 0;  // CHANGE ME - Hardcoded for 1x1
+  const int tile_overlap_x_in = 0;  // /* YOUR CODE HERE */ - change this value, now it is Hardcoded for 1x1
+  const int tile_overlap_y_in = 0;  // /* YOUR CODE HERE */ - change this value, now it is Hardcoded for 1x1
 
   const int network_offset =  h_tile_idx * (l1_layer.layer_dim.y_in - tile_overlap_y_in) * network_layers[0].layer_dim.x_in * network_layers[0].layer_dim.c_in
       +  w_tile_idx * (l1_layer.layer_dim.x_in - tile_overlap_x_in) * network_layers[0].layer_dim.c_in
@@ -63,7 +63,7 @@ void tile_load(int  h_tile_idx, int  w_tile_idx, int  c_tile_idx, int buffer_idx
 
   dory_dma_copy copy = {
     .ext = (void *)(network_layers[0].input_data + network_offset),
-    .loc = (void *)l1_layer.input_data + double_buffer_offset, 
+    .loc = (void *)l1_layer.input_data + double_buffer_offset,
     .stride_2d = 1,  // unused in 2D transfers
     .number_of_2d_copies = 1,  // only 1 2D copy in 2D transfers
     .stride_1d = ext_stride_1d,
@@ -105,7 +105,7 @@ void tile_store(int h_tile_idx, int w_tile_idx, int c_tile_idx, int buffer_idx)
 #ifdef USE_L1_MEM
   dory_dma_copy copy = {
     .ext = (void *)(network_layers[0].output_data + (l1_layer.layer_dim.c_out *  c_tile_idx) + (network_layers[0].layer_dim.c_out * l1_layer.layer_dim.x_out *  w_tile_idx) + (network_layers[0].layer_dim.c_out * network_layers[0].layer_dim.x_out * l1_layer.layer_dim.y_out *  h_tile_idx)),
-    .loc = (void *)l1_layer.output_data + buffer_idx * l1_layer.layer_dim.c_out * l1_layer.layer_dim.x_out * l1_layer.layer_dim.y_out, 
+    .loc = (void *)l1_layer.output_data + buffer_idx * l1_layer.layer_dim.c_out * l1_layer.layer_dim.x_out * l1_layer.layer_dim.y_out,
     .stride_2d = 1,  // unused in 2D transfers
     .number_of_2d_copies = 1,  // only 1 2D copy in 2D transfers
     .number_of_1d_copies = l1_layer.layer_dim.y_out,
